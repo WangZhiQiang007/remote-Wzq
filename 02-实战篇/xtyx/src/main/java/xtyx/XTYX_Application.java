@@ -13,7 +13,7 @@ public class XTYX_Application {
         System.out.println("--------------------------*******************---------------------");
         System.out.println("                          欢迎使用星探优选");
         System.out.println("                               启动成功");
-        System.out.println("--------------------------*******************----------------------");
+        System.out.println("-------------------------*******************----------------------");
         System.out.println();
         SpringApplication.run(XTYX_Application.class, args);
     }

@@ -64,7 +64,9 @@ public class UserController {
         // TODO 实现登出功能
         return userService.logout(request);
     }
-
+    /**
+     *关于我的信息
+     */
     @GetMapping("/me")
     public Result me() {
         UserDTO user = UserHolder.getUser();
@@ -93,12 +95,20 @@ public class UserController {
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
         return Result.ok(userDTO);
     }
-    // 签到接口
+    
+    /**
+     * 签到接口
+     * @return
+     */
     @PostMapping("/sign")
     public Result sign() {
         return userService.sign();
     }
-    // 签到统计
+    
+    /**
+     * 签到统计
+     * @return
+     */
     @GetMapping("/sing/count")
     public Result signCount() {
         return userService.signCount();

@@ -2,6 +2,7 @@ package xtyx.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -177,7 +178,10 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
 	
 	private void queryBlogUser(Blog blog) {
 		Long userId = blog.getUserId();
-		User user = userService.getById(userId);
+		User user = userService.getOne(new QueryWrapper<User>().eq("id", userId));
+		if (user == null){
+			throw new RuntimeException("用户不存在");
+		}
 		blog.setName(user.getNickName());
 		blog.setIcon(user.getIcon());
 	}

@@ -17,7 +17,27 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        <exclusions>
+            <exclusion>
+                <artifactId>spring-data-redis</artifactId>
+                <groupId>org.springframework.data</groupId>
+            </exclusion>
+            <exclusion>
+                <artifactId>lettuce-core</artifactId>
+                <groupId>io.lettuce</groupId></exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+        <dependency><groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>6.1.6.RELEASE</version>
+        </dependency>
+
+        <!--*************************-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
@@ -46,7 +66,13 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.1.0</version>
+            <version>3.4.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mybatis-plus-extension</artifactId>
+                    <groupId>com.baomidou</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--hutool-->
         <dependency>
@@ -73,6 +99,7 @@
             <artifactId>mybatis-plus-extension</artifactId>
             <version>3.4.3</version>
         </dependency>
+
     </dependencies>
 
     <build>

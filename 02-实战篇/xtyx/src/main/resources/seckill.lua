@@ -14,4 +14,5 @@ if (redis.call("sismember", orderKey, userId) == 1) then
 end
 redis.call("incrby", stockKey, -1) -- 减少库存
 redis.call("sadd", orderKey, userId) -- 记录用户
-redis.call("xadd", "stream.orders", "*", "userId", userId, "voucherId", voucherId,"id",orderId)
+--redis.call("xadd", "stream.orders", "*", "userId", userId, "voucherId", voucherId,"id",orderId)
+return 0

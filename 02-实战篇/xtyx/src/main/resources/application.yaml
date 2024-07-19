@@ -10,7 +10,9 @@ spring:
     password: 12345
   redis:
     host: 192.168.7.23
+    password: 12345
     port: 6379
+    timeout: 1000ms
     lettuce:
       pool:
         max-active: 10

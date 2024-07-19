@@ -18,4 +18,8 @@ public interface IUserService extends IService<User> {
 	Result logout(HttpServletRequest request);
 	
 	Result login2(LoginFormDTO loginForm, HttpSession session);
+	
+	Result sign();
+	
+	Result signCount();
 }

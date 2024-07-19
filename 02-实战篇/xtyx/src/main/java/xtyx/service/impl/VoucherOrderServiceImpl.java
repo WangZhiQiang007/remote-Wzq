@@ -59,8 +59,6 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 				try {
 					//获取队列中的订单信息
 					VoucherOrder take = orderTasks.take();
-					//创建订单
-					
 				} catch (Exception e) {
 					log.error("处理订单异常了",e);
 				}
@@ -111,8 +109,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 		voucherOrder.setUserId(userId);
 		voucherOrder.setId(orderId);
 		orderTasks.add(voucherOrder);
-		//获取代理对象
-		proxy = (IVoucherOrderService) AopContext.currentProxy();
+//		//获取代理对象
+//		proxy = (IVoucherOrderService) AopContext.currentProxy();
 		//3 返回订单id
 		return Result.ok(orderId);
 	}

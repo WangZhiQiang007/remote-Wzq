@@ -8,6 +8,7 @@ import xtyx.entity.VoucherOrder;
 import xtyx.mapper.VoucherOrderMapper;
 import xtyx.service.ISeckillVoucherService;
 import xtyx.service.IVoucherOrderService;
+import xtyx.service.IVoucherService;
 import xtyx.utils.RedisIdWorker;
 import xtyx.utils.UserHolder;
 import org.redisson.api.RedissonClient;
@@ -42,6 +43,12 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 		SECKILL_SCRIPT = new DefaultRedisScript<>();
 		SECKILL_SCRIPT.setLocation(new ClassPathResource("seckill.lua"));
 		SECKILL_SCRIPT.setResultType(Long.class);
+	}
+	private static final DefaultRedisScript<Long> VOUCCHER_SCRIPT;
+	static {
+		VOUCCHER_SCRIPT = new DefaultRedisScript<>();
+		VOUCCHER_SCRIPT.setLocation(new ClassPathResource("voucher.lua"));
+		VOUCCHER_SCRIPT.setResultType(Long.class);
 	}
 	private BlockingQueue<VoucherOrder> orderTasks = new ArrayBlockingQueue<>(1024 * 1024);
 	private static final ExecutorService SECKILL_ORDER_EXCUETOR = Executors.newSingleThreadExecutor();
@@ -85,9 +92,34 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 	
 	}
 	private IVoucherOrderService proxy;
+	@Resource
+	private IVoucherService VoucherService;
 	@Override
 	public Result seckillVoucher(Long voucherId) {
 		Long userId = UserHolder.getUser().getId();
+		//查询是否是普通优惠券，是的话不做一人一单处理
+		if (VoucherService.getById(voucherId).getType() == 2){
+			Long result = stringRedisTemplate.execute(
+					VOUCCHER_SCRIPT,
+					Collections.emptyList(),
+					voucherId.toString(), userId.toString()
+			);
+			int value = result.intValue();
+			//2. 判断结果是否为0
+			if (value != 0 ){
+				//2.1.不为零 没有购买资格
+				return Result.fail("库存不足了");
+			}
+			//2.2 有购买资格 下单消息存到阻塞队列redis
+			VoucherOrder voucherOrder = new VoucherOrder();
+			long orderId = redisIdWorker.nextId("order");
+			voucherOrder.setVoucherId(voucherId);
+			voucherOrder.setUserId(userId);
+			voucherOrder.setId(orderId);
+			orderTasks.add(voucherOrder);
+			return Result.ok(orderId);
+		}
+		
 		//1.执行lua脚本
 		Long result = stringRedisTemplate.execute(
 				SECKILL_SCRIPT,
@@ -154,7 +186,6 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 			} finally {
 				simpleRedisLock.unlock();
 			}
-			
 		}
 	*/
 	//	设计到两张表的修改，添加事务，一旦出现问题，可以及时回滚
